@@ -1,0 +1,225 @@
+---
+title: "R Markdown Example"
+author: "Hadrien"
+output:
+  html_document:
+    df_print: paged
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r, include=FALSE}
+library(ggplot2)
+library(dplyr)
+```
+ 
+
+
+```{r, echo = FALSE}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+## What is Markdown?
+
+"Markdown is a lightweight markup language with plain text formatting syntax. It is **designed so that it can be converted to HTML and many other formats** using a tool by the same name.[8] Markdown is often used to format readme files, for writing messages in online discussion forums, and to create rich text using a plain text editor. As the initial description of Markdown contained ambiguities and unanswered questions, many implementations and extensions of Markdown appeared over the years to answer these issues.... the goal of enabling people "to write using an easy-to-read, easy-to-write plain text format, and optionally convert it to structurally valid XHTML (or HTML)... The key design goal is **readability**..." [wikipedia](https://en.wikipedia.org/wiki/Markdown)
+
+## R Markdown Basics  
+
+> RMD files contain 3 important types of content:  
+1. An (optional) YAML header surrounded by --s.  
+2. Chunks of code surrounded by ```.  
+3. Text mixed with simple text formatting  
+(R For Data Science, 424)
+
+## Useful Syntax
+
+*italics*  
+**bold**  
+superscript^2^  
+~~strikethrough~~  
+[hyperlink](url)
+
+# header 1 
+
+## header 2  
+
+### header 3  
+
+#### ect  
+
+inline equation: $A = \pi*r^{2}$  
+
+
+image: ![Image Alt Text](tufts.jpeg)  
+
+
+> block quote  
+Insert deep quote here
+
+* unordered list
+* item 2
+    + sub-item 1
+    + sub-item 2
+
+1. ordered list
+2. item 2
+    + sub-item 1
+    + sub-item 2 
+
+## What's the YAML header?  
+
+"YAML is a human friendly data serialization standard for all programming languages." This is where you define your report's metadata.
+
+
+
+## Code chunk options
+
+
+```{r block-name, include=FALSE}
+# include option suppresses the printing of both the code and the results
+library(corrplot)
+
+```
+
+
+
+```{r, echo=FALSE}
+# echo option hides the code but prints the results
+M <- cor(mtcars)
+corrplot(M, method="circle")
+```
+
+
+```{r, message=FALSE, warning=FALSE}
+# suppress warning messages from being printed
+library(ggplot2)
+```
+
+```{r, eval = FALSE}
+# whether to evaluate the code chunk or not
+plot <- corrplot(M, method="circle")
+plot
+```
+
+## E-mail options
+
+```{r e-mail}
+
+# Set e-mail subject
+rmarkdown::output_metadata$set(rsc_email_subject = "My awesome e-mail subject")
+
+# Construct e-mail subject
+subject <- rmarkdown::output_metadata$get("rsc_email_subject") # retrieve current email subject
+difference <- (1200-1000)/1000 # some metric
+rmarkdown::output_metadata$set(rsc_email_subject = paste0(subject," - ", difference*100, "%", " change!"))
+
+# Suppress e-mail
+if (difference < .1) {
+  rmarkdown::output_metadata$set(rsc_suppress_email_scheduled = TRUE)
+}
+```
+
+# Output files 
+
+Your RMD doc may contain some data you'd like to share along with the report. With RStudio Connect, you can make output files available to download via a link or be sent via e-mail.
+
+```{r output-files}
+# Create data
+set.seed(123)
+data1 <- tibble(Month= format(ISOdate(2018,1:12,1),"%B"), # month vector
+             Policies = sample(500:1000, 12, replace = TRUE))
+
+data2 <- tibble(Month= format(ISOdate(2018,1:12,1),"%B"), # month vector
+             NBLR = sample(.5:1.1, 12, replace = TRUE))
+
+# Write data frames to CSV
+write.csv(data1, file = "data1.csv")
+write.csv(data2, file = "data2.csv")
+
+# Attach output files to e-mail
+rmarkdown::output_metadata$set(rsc_email_attachments = list("data1.csv", "data2.csv"))
+```
+
+You can also link to your output data files in your RMD report: [download data](data1.csv)
+
+# Editing the e-mail body 
+
+```{r email-body}
+
+# simple example
+rmarkdown::output_metadata$set(rsc_email_body_html = "html text")
+
+# compose e-mail using blastula package
+library(blastula)
+name <- "Hadrien"
+message <- compose_email(
+  body = "
+  This body argument is where you can include the text for the main body of the e-mail message. Markdown can be used, for example I can make text **bold** or _underline phrases_. I can also add section headers  like so:
+  
+  ## Section heading 
+  
+  The blastula package supports string interpolation, which is getting variables to display within a string (in this case your e-mail body) as their actual value rather than their variable name. This can be done using curly braces to enclose R code chunks like this:
+  
+ Sincerely,<br><br>
+ 
+ {name}
+ 
+  "
+)
+
+
+preview_email(message)
+
+rmarkdown::output_metadata$set(rsc_email_body_html = "html text")
+
+```
+
+Embed ggplot graphs in your e-mail with the `blastula::add_ggplot()` function: 
+
+```{r}
+# create a ggplot plot
+library(ggplot2)
+plot <-
+  ggplot(data = mtcars,
+         aes(
+           x = disp,
+           y = hp,
+           color = wt,
+           size = mpg
+         )) +
+  geom_point()
+
+plot 
+
+
+# create an HTML fragment that contains a ggplot as ab embedded plot
+plot_html <- 
+  add_ggplot(
+    plot_object = plot,
+    height = 5,
+    width = 7
+  )
+
+
+# include plot in the email message body
+email <-
+  compose_email(
+    body = "
+    Good morning! Below are today's latest results:
+
+    {plot_html}
+    
+    ")
+
+preview_email(email)
+```
+

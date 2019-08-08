@@ -1,0 +1,229 @@
+---
+title: "Agricultural Trends"
+author: "Hadrien@rstudio.com"
+date: "3/27/2019"
+output:
+  html_document: default
+params:
+  country:
+    choices:
+    - United States of America
+    - Mexico
+    - Canada
+    - Saudi Arabia
+    - Brazil
+    - France
+    - Italy
+    input: select
+    label: Country
+    value: United States of America
+  crop:
+    choices: [Wheat, Rice, Maiz, Barley, Apples, "Beans, dry", Sugar cane, Carrots and turnips, Bananas]
+    input: select
+    label: Crop
+    value: Wheat
+---
+
+# Overview 
+
+This analysis aims to better understand agricultural production trends in order to better guide decisions related to the manufacture of farming equipment to ensure future food security in different geographies.
+
+
+**Data:** Data for this analysis was obtained from the [Food and Agricultural Organization of the United Nations](http://www.fao.org/faostat/en/#data/QC) website on April 1st, 2019. Data was downloaded as the bulk download "All Data".
+
+**Using this report** 
+
+To view this report, go to the [report URL](https://colorado.rstudio.com/rsc/agrilculture-trends-paramaterized-with-inputs/) on RStudio Connect. On the left hand side of the report, select your desired input paramaters and click run. A report can be generated for any country & crop combination. This report was designed for the following users: 
+
+- Marketing managers: explore production trends to plan which markets to invest in and create campaigns for. 
+- Product managers: identify which product lines to invest in to help farmers overcome challenges such as droughts and desertification and meet the demand of an ever increasing population.
+
+**Contributing** 
+
+To contribute to this project, fork this report's repository on [github](https://github.com/hdykiel/paramaterized-report-agriculture/commits/master) and create a new branch using the format "your-name-feature-name" and submit a pull request.
+
+
+```{r setup, include=FALSE}
+# set default settings for all code chunks
+knitr::opts_chunk$set(message=FALSE, warning=FALSE, echo=FALSE)
+
+# load required packages
+library(tidyverse)
+library(readr)
+library(choroplethr)
+library(choroplethrMaps)
+library(blastula)
+```
+
+
+```{r tidy-data, include=FALSE}
+
+######################
+# load and tidy data #
+######################
+
+
+# load data
+df <- read_csv("../data/Production_Crops_E_All_Data_NOFLAG.csv")
+
+# transform from wide to long format
+df <- df %>% gather(Year, Value, Y1961:Y2017)
+
+# clean up year
+df$Year <-  df$Year %>% str_remove("Y") %>% as.integer()
+
+# remove aggregates and yield
+df <- df %>% 
+  filter(Element == "Production", !grepl("Total|Primary|Rice Milled Eqv", Item))
+
+
+```
+
+
+
+```{r top-crops, eval=FALSE, echo=FALSE, message=FALSE}
+
+######################################
+# Top production by crop (worldwide) #
+######################################
+
+# summarize by food item
+df_total_production <-  df %>%
+  group_by(Item) %>%
+  summarise(tonnes_produced = sum(na.omit(Value)))
+
+# total production by crop barplot
+ggplot <- df_total_production %>%
+  top_n(20, tonnes_produced) %>%
+  ggplot(aes(reorder(Item,-tonnes_produced), tonnes_produced)) + geom_bar(stat =
+                                                                            "identity") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+```
+
+
+```{r country-stats}
+data("country.map") # load data set
+country.data <- country.map %>%
+  select(region, type, pop_est, region_wb, economy) %>% # keep only certain metrics
+  distinct() # retain unique rows only
+
+# keep stats for selected countries only
+country <- params$country
+crop <- params$crop
+
+stats <- country.data %>% filter(region==str_to_lower(params$country))
+country_url <- paste0("https://en.wikipedia.org/wiki/", str_to_title(country))
+```
+
+
+
+
+```{r plot1-choropleth, echo=FALSE}
+
+# summarize total production by country
+df_total_by_country <- df %>%
+  group_by(Area) %>%
+  summarize(value = sum(na.omit(Value))) %>%
+  mutate(region = str_to_lower(Area)) %>% 
+  select(region, value) # reorganize columns, drop Area
+
+# filter any country name not found in choroplethrMaps::country.map data frame
+df_total_by_country <- df_total_by_country %>%
+  filter(region %in% country.map$region)
+
+# production by country choropleth
+plot1 <- country_choropleth(df_total_by_country)
+
+
+```
+
+
+ 
+```{r plot2-production,echo=FALSE}
+
+# plot production by crop and country
+plot2 <- df %>%
+  filter(Item == crop, Area == country) %>%
+  ggplot(aes(Year, Value)) + geom_point() +
+  geom_smooth() +
+  ggtitle(label = paste("Annual Production (in tonnes) of", params$crop, "in", params$country))
+```
+
+
+### Worldwide production of `r params$crop`
+
+
+```{r plot1, fig.width=9}
+plot1
+```
+
+ 
+
+<div style="float:right; margin-left: 10%;">
+
+```{r plot2, fig.width=6}
+plot2
+```
+
+</div> 
+
+### Production trend (`r params$country`)
+
+ 
+[`r str_to_title(stats$region)`](`r country_url`) is a country in `r stats$region_wb` with an estimated population of `r stats$pop_est`. Its government system is `r stats$type` and is categorized as having a "`r stats$economy`" economy.
+
+
+
+```{r email-options}
+
+# Set e-mail subject
+rmarkdown::output_metadata$set(rsc_email_subject = "My awesome e-mail subject")
+
+# Construct e-mail subject
+subject <- rmarkdown::output_metadata$get("rsc_email_subject") # retrieve current email subject
+difference <- (1200-1000)/1000 # some metric
+rmarkdown::output_metadata$set(rsc_email_subject = paste0(subject," - ", difference*100, "%", " change!"))
+
+# Suppress e-mail
+if (difference < .1) {
+  rmarkdown::output_metadata$set(rsc_suppress_email_scheduled = TRUE)
+}
+```
+
+
+
+
+```{r compose-email}
+
+# Create a simple email message using
+# Markdown formatting with the blastula package
+library(blastula)
+
+email <-
+  compose_email(
+  body = "
+  Time generated: {Sys.time()}
+
+  ## {params$country} {params$crop} production
+
+  We can use Markdown formatting \\
+  to **embolden** text or to add \\
+  *emphasis*.
+  
+  {add_ggplot(plot_object = plot2, width = 8, height = 5)}
+
+  Please contact the reporting team with any questions about this report.")
+
+# The email message can always be
+# previewed using `preview_email()`
+# preview_email(email = email)
+
+# Give the HTML email data to RStudio Connect.
+rmarkdown::output_metadata$set(rsc_email_body_html = email$html_str)
+rmarkdown::output_metadata$set(rsc_email_images = email$images)
+
+
+```
+

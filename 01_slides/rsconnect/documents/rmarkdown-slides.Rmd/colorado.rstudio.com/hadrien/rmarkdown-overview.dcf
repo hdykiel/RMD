@@ -1,0 +1,12 @@
+name: rmarkdown-overview
+title: rmarkdown-overview
+username: hadrien
+account: hadrien
+server: colorado.rstudio.com
+hostUrl: http://colorado.rstudio.com/rsc/__api__
+appId: 1268
+bundleId: 11477
+url: http://colorado.rstudio.com:80/rsc/content/1268/
+when: 1531160960.81696
+asMultiple: FALSE
+asStatic: TRUE
