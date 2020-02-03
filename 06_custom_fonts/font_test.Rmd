@@ -1,0 +1,30 @@
+---
+title: "Font Test"
+output: 
+  flexdashboard::flex_dashboard: 
+    orientation: columns 
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+
+One way to customize font size is to insert HTML tags right into your markdown text like so: <font size="5"> this font is huge!</font>
+
+Alternatively, you can also use custom css code. This is a great option for any HTML based outputs like html_document, flexdashboard, storyboard, etc.
+
+## Column 1 
+
+### Row
+Text
+
+```{r}
+
+```
+
+
+
+## Column 2 
+Text

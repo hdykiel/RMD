@@ -1,0 +1,12 @@
+name: custom_font_html
+title: custom_font_html
+username: hadrien
+account: hadrien
+server: colorado.rstudio.com
+hostUrl: https://colorado.rstudio.com/rsc/__api__
+appId: 4274
+bundleId: 33956
+url: https://colorado.rstudio.com/rsc/content/4274/
+when: 1580749365.41915
+asMultiple: FALSE
+asStatic: FALSE
