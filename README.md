@@ -13,4 +13,4 @@ This repo contains all the relevant files for the webinar "Intro to RMD, Paramet
 
 **05_agriculture_report_params_customized_email**: example parameterized report with custom param settings and custom e-mail with the `blastula` package
 
-test
+**06_custom_fonts**: example scripts showing how to customize font size
