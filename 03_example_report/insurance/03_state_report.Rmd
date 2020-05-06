@@ -1,0 +1,61 @@
+---
+title: "State Economics Report"
+author: "Hadrien@rstudio.com"
+date: "10/17/2019"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+params:
+  state: MA
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(tidyverse)
+
+# load data
+dat_freq_sev <- read_csv("freq_sev.csv")
+
+```
+
+
+## Overview 
+
+This report template was designed for DSOs to **explore the economics of policies in their respective states**. It provides metrics and insights to help understand the performance and profitability of each state. It was created in R using the `rmarkdown` package. Rather than creating 50 individual reports for each state, a single paramaterized report template was created which allows the user to update the input parameter used in this report, `state`, to view the report for that particular state. Parameterized rmarkdown reports are a great way to create a single report which can easily and quickly be re-run based on different input assumptions without needing to make any changes to the source code itself.
+
+## Using this report 
+
+There are different ways to access or re-execute this report.
+
+_R Users_ 
+
+Users familiar with R can open and edit the `.Rmd` file directly and re-excute the report with new input parameters (e.g. US States) by changing the parameter value `state` in the YAML header. Users can also access the project's repository on [github](https://github.com/hdykiel/rmd-example-state-profitability).
+
+_Non R Users_
+
+This report was designed to be accessed by all users, and as such non R users have numerous ways to view and interact with the report. Firstly, the R user(s) responsible for generating the report can share the PDF, Word, or HTML output of the report via email or on a shared file serveer. Alternatively, the report owner may wish to publish the report to a hosting platform such as [RStudio Connect](https://rstudio.com/products/connect/) where it can be accessed by whoever was granted access permission via any web browser. One advantage of accessing and vieweing this report via RStudio Connect is the ability for viewers to update the input parameters themselves. This allows users to rerender the report for different sets of core assumptions via the RStudio Connect graphical user interface without any coding required.
+
+## Key Indicators
+
+
+```{r frequency-plot}
+# frequency plot
+dat_freq_sev %>%
+  filter(state %in% c(params$state)) %>%
+  ggplot(aes(year, frequency)) + 
+  geom_point() + geom_smooth() + 
+  ggtitle(label = paste("Frequency of Claims:", params$state))
+
+```
+
+
+```{r severity-plot}
+# severity plot
+dat_freq_sev %>%
+  filter(state %in% c(params$state)) %>%
+  ggplot(aes(year, avg_severity)) + 
+  geom_point() + geom_smooth() + 
+  ggtitle(label = paste("Avg Severity:", params$state))
+```
+

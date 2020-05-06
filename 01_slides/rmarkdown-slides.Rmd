@@ -1,7 +1,7 @@
 ---
 title: "Introduction to rmarkdown"
 author: "Hadrien@rstudio.com"
-date: "August 7th, 2019"
+date: "May 7th, 2020"
 output:
   slidy_presentation: default
   ioslides_presentation: default
@@ -25,18 +25,10 @@ install.packages("rmarkdown")
 
 # Agenda 
 
-* Intro 
-* Basics of RMD
+* R Markdown (RMD) Basics
 * Paramaterized Report
 * Deploying RMD to RStudio Connect 
 
-
-# Why is it useful? 
-
-Reproducible analyses $\Longrightarrow$ increased efficiency + fewer errors
-
-- Share results with stakeholders who don't care about the code 
-- Share results & analysis with other data practitioners
 
 # What can I build with the rmarkdown package? 
 

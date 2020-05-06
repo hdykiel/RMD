@@ -1,0 +1,60 @@
+---
+title: "State Profitability EDA"
+author: "Hadrien@rstudio.com"
+date: "9/27/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(tidyverse)
+```
+
+In this script we performed some preliminary exploratory data analysis to better understand the data. Unlike `01_simulate_data.Rmd`, this script does not need to be executed in order to generate the final state profitibility report. It may, however, be useful in answering questions which arise from the report.
+
+We first began by generating a few different choropleth maps of the US showing loss ratio. We used the code provided on the webpage ttps://socviz.co/maps.html as a starting point.
+
+```{r data-prep}
+# load policy data
+dat <- read_csv("data.csv")
+
+# load map data
+library(maps)
+us_states <- map_data("state")
+head(us_states)
+
+
+```
+
+```{r visualize, include = TRUE}
+
+# a basic map
+p1 <- ggplot(data = us_states,
+            mapping = aes(x = long, y = lat,
+                          group = group, fill = region))
+
+p1 + geom_polygon(fill = "white", color = "black")
+
+# fill by LR
+us_states_lr <- left_join(us_states, dat, by = c("region"= "state")) # join data sets
+
+p2 <- ggplot(data = us_states_lr,
+            aes(x = long, y = lat,
+                group = group, fill = loss_ratio))
+
+
+p2 + geom_polygon(color = "gray90", size = 0.1) +
+    coord_map(projection = "albers", lat0 = 39, lat1 = 45) 
+
+# add a fill gradient
+(p3 <- ggplot(data = us_states_lr, aes(x = long, y = lat, group = group, fill = loss_ratio)) +
+  geom_polygon(color = "gray90", size = 0.1) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  scale_fill_gradient2(midpoint = 0.5, high = scales::muted("red"), low = scales::muted("blue") )
+)
+
+
+
+
+```
+

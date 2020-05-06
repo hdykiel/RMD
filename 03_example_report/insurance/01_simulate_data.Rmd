@@ -1,0 +1,57 @@
+---
+title: "Data Simulation"
+author: "Hadrien@rstudio.com"
+date: "10/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(tidyverse)
+```
+
+This scripts simulates fake data such as loss ratio, frequency, and severity for each U.S. state. For simplicity, we assume each metric is represented by a normal distribution.
+
+## Simulate policy data
+
+```{r}
+# set seed for reproducibility
+set.seed(124)
+
+# number of states
+n <- length(state.name)
+
+# simulate loss ratio
+dat <- tibble(
+  state = state.name,
+  # normal distribution
+  loss_ratio = rnorm(n = n, mean = 0.5, sd = 0.1)
+)
+
+# convert state name to lowercase
+dat$state <- tolower(dat$state)
+
+# export loss ratio data set to csv
+write.csv(dat, "data.csv", row.names = FALSE)
+
+# Frequency Severity
+set.seed(20) # set seed for reproducibility
+
+# create data set
+dat_freq_sev <- tibble(
+  # 10 records per state
+  state = rep(state.abb,10),
+  year = rep(2010:2019, each = 50),
+  # normal distribution
+  frequency = rnorm(500, mean = 0.14, sd = 0.03),
+  avg_severity = rnorm(500, mean = 2750, sd = 900)
+)
+
+# plot distribution
+qplot(dat_freq_sev$frequency)
+
+# export frequence severity data to csv
+write.csv(dat_freq_sev, "freq_sev.csv", row.names = FALSE)
+
+```
+
