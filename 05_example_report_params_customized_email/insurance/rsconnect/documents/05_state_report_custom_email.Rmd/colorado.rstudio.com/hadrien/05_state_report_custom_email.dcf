@@ -1,0 +1,12 @@
+name: 05_state_report_custom_email
+title: 05_state_report_custom_email
+username: hadrien
+account: hadrien
+server: colorado.rstudio.com
+hostUrl: https://colorado.rstudio.com/rsc/__api__
+appId: 6064
+bundleId: 37201
+url: https://colorado.rstudio.com/rsc/content/6064/
+when: 1588811420.85274
+asMultiple: FALSE
+asStatic: FALSE

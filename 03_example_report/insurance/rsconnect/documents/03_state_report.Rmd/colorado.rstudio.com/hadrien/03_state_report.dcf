@@ -1,0 +1,12 @@
+name: 03_state_report
+title: 03_state_report
+username: hadrien
+account: hadrien
+server: colorado.rstudio.com
+hostUrl: https://colorado.rstudio.com/rsc/__api__
+appId: 6062
+bundleId: 37199
+url: https://colorado.rstudio.com/rsc/content/6062/
+when: 1588811250.71324
+asMultiple: FALSE
+asStatic: FALSE
