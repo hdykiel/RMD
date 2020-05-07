@@ -2,12 +2,18 @@
 title: "State Economics Report"
 author: "Hadrien@rstudio.com"
 date: "10/17/2019"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+params:
+  state: MA
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(tidyverse)
+library(blastula)
 
 # load data
 dat_freq_sev <- read_csv("freq_sev.csv")
@@ -37,10 +43,10 @@ This report was designed to be accessed by all users, and as such non R users ha
 ```{r frequency-plot}
 # frequency plot
 dat_freq_sev %>%
-  filter(state %in% c("MA")) %>%
+  filter(state %in% c(params$state)) %>%
   ggplot(aes(year, frequency)) + 
   geom_point() + geom_smooth() + 
-  ggtitle(label = paste("Frequency of Claims:", "MA"))
+  ggtitle(label = paste("Frequency of Claims:", params$state))
 
 ```
 
@@ -48,9 +54,18 @@ dat_freq_sev %>%
 ```{r severity-plot}
 # severity plot
 dat_freq_sev %>%
-  filter(state %in% c("MA")) %>%
+  filter(state %in% c(params$state)) %>%
   ggplot(aes(year, avg_severity)) + 
   geom_point() + geom_smooth() + 
-  ggtitle(label = paste("Avg Severity:", "MA"))
+  ggtitle(label = paste("Avg Severity:", params$state))
+```
+
+```{r connect_email, echo=FALSE}
+render_connect_email(input = "05_connect_email.Rmd") %>%
+  attach_connect_email(
+    subject = "RStudio Connect HTML Email",
+    attach_output = TRUE,
+    attachments = c("freq_sev.csv")
+  )
 ```
 

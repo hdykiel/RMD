@@ -7,27 +7,12 @@ output:
   ioslides_presentation: default
 ---
 
-# Housekeeping 
-
-Install some packages we'll be using today: 
-
-```{r, eval=FALSE}
-install.packages("rmarkdown")
-```
-
 # Goals for today
 
 * Understand what the rmarkdown package is and what you can build with it
 * Learn the basics of a RMD document so you can use it to do analysis and/or build reproducible reports
 * Transform your RMD report into a paramaterized report
 * Learn how you can leverage RStudio Connect to publish your RMD reports to communicate your findings and reach more people
-
-
-# Agenda 
-
-* R Markdown (RMD) Basics
-* Paramaterized Report
-* Deploying RMD to RStudio Connect 
 
 
 # What can I build with the rmarkdown package? 
@@ -51,5 +36,17 @@ This may sound complicated, but R Markdown makes it extremely simple by encapsul
 
 ![Render process](https://d33wubrfki0l68.cloudfront.net/61d189fd9cdf955058415d3e1b28dd60e1bd7c9b/b739c/lesson-images/rmarkdownflow.png)
 
+# Housekeeping 
 
+Install some packages we'll be using today: 
 
+```{r, eval=FALSE}
+install.packages("rmarkdown")
+```
+
+# Summary 
+
+* Use RMD to create reproducible reports and other data artifacts 
+* Add parameters to your report to rerun your report under different set of assumptions
+* Automate the execution and delivery of your reports with the Connect scheduler
+* Craft custom email notifications

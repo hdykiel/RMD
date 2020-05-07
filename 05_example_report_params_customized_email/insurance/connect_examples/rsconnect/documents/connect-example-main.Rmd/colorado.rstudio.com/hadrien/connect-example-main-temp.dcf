@@ -1,0 +1,12 @@
+name: connect-example-main-temp
+title: connect-example-main-TEMP
+username: hadrien
+account: hadrien
+server: colorado.rstudio.com
+hostUrl: https://colorado.rstudio.com/rsc/__api__
+appId: 6059
+bundleId: 37196
+url: https://colorado.rstudio.com/rsc/content/6059/
+when: 1588796130.38052
+asMultiple: FALSE
+asStatic: FALSE
